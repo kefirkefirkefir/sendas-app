@@ -8,15 +8,13 @@ Sendas transforms job searching and civil service exam preparation into an engag
 
 ## Visual Themes
 
-Sendas offers two complete aesthetic identities that transform the entire interface (why? just because):
+Sendas offers two complete aesthetic identities that transform the entire interface:
 
 ### X-Files
 Dark interface inspired by classified government dossiers and paranormal investigations. Neon accents, CRT scanline overlay, monospace typography, and a cyberpunk atmosphere that makes you feel like you're uncovering hidden truths about the job market.
 
 ### Renaissance
-Elegant dark interface inspired by Quattrocento Italy. Warm pigments, serif typography (EB Garamond, Playfair Display, Crimson Text), subtle marble texture, and muted earth tones. No neon, no glassmorphism — just quiet, restrained beauty.
-
-Both themes adapt dynamically to the 4 game modes, changing accent colors, backgrounds, and text tones to match the current activity.
+Elegant dark interface inspired by Quattrocento Italy. Warm earth pigments, serif typography (EB Garamond, Playfair Display, Crimson Text), subtle marble texture, and muted tones. No neon, no glassmorphism — just quiet, restrained beauty. Both themes adapt dynamically to the 4 game modes, changing accent colors, backgrounds, and text tones.
 
 ---
 
@@ -38,15 +36,16 @@ Each mode changes the color palette and mood of the entire interface:
 ### Study Panel (Core)
 The heart of Sendas. Designed specifically for civil service exam preparation (oposiciones) and structured study:
 
-- **Study sessions tracker** — Log hours, track streaks, and monitor consistency
+- **Study sessions tracker** — Log hours, track streaks, and monitor consistency over time
 - **Exam type management** — Organize by opposition type (civil service, technical, language certifications)
 - **Study materials** — Link resources, notes, and references per topic
 - **Progress indicators** — Visual bars and stats showing study volume over time
 - **Subject organization** — Group study topics by category and priority
+- **Editable operations** — Create, edit and delete study entries with full form validation
 
 ### Mission Board
 Drag-and-drop task management system:
-- Create missions with difficulty levels (Fácil, Medio, Difícil, Legendario)
+- Create missions with difficulty levels (Facil, Medio, Dificil, Legendario)
 - Categorize: job applications, interviews, networking, admin tasks
 - XP rewards scaled by difficulty
 - Deadline tracking and completion history
@@ -62,7 +61,10 @@ Company and contact management for job hunting:
 Personal journal that adapts its visual style to the active theme and game mode. Write reflections, track mood, and maintain a chronological record of your journey.
 
 ### Character Profile
-Radar chart displaying 5 core stats: Trabajo (Work), Estudio (Study), Salud (Health), Voluntariado (Volunteering), Ocio (Leisure).
+Radar chart displaying 5 core stats: Trabajo (Work), Estudio (Study), Salud (Health), Voluntariado (Volunteering), Ocio (Leisure). Level up by completing missions and study sessions.
+
+### Daily Oracle
+Random daily quest generator that assigns productive activities across your stats, with health penalties for consecutive inactive days.
 
 ---
 
@@ -73,8 +75,8 @@ Radar chart displaying 5 core stats: Trabajo (Work), Estudio (Study), Salud (Hea
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 + shadcn/ui |
-| Database | SQLite via Prisma ORM |
-| State | Zustand |
+| Database | PostgreSQL via Prisma ORM |
+| State | Zustand + localStorage |
 | Charts | Recharts |
 | DnD | @dnd-kit |
 
@@ -92,18 +94,23 @@ Radar chart displaying 5 core stats: Trabajo (Work), Estudio (Study), Salud (Hea
 git clone https://github.com/kefirkefirkefir/sendas-app.git
 cd sendas-app
 npm install
-
-# Create .env file
-echo "DATABASE_URL=file:./db/custom.db" > .env
-
-# Create database
-mkdir -p db
+cp .env.example .env
+# Edit .env with your DATABASE_URL
 npx prisma db push
-
 npm run dev
 ```
 
 Available at `http://localhost:3000`.
+
+---
+
+## Deploy to Vercel
+
+1. Push to GitHub
+2. Import repo in [vercel.com](https://vercel.com)
+3. Go to **Storage → Create Database → Postgres**
+4. Vercel auto-configures `DATABASE_URL`
+5. Deploy
 
 ---
 
@@ -113,22 +120,32 @@ Available at `http://localhost:3000`.
 sendas-app/
 ├── src/
 │   ├── app/
-│   │   ├── globals.css          # Theme definitions, Renaissance & X-Files styles
+│   │   ├── globals.css          # Theme definitions, X-Files & Renaissance styles
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
-│   │   ├── xfiles/              # Core panels
-│   │   │   ├── StudyPanel.tsx   # Study sessions & exam tracking
+│   │   ├── xfiles/
+│   │   │   ├── StudyPanel.tsx   # Study sessions & exam tracking (core panel)
 │   │   │   ├── MissionPanel.tsx # Task management with DnD
 │   │   │   ├── CrmPanel.tsx     # Company CRM
 │   │   │   ├── DiaryPanel.tsx   # Field journal
+│   │   │   ├── RadarStats.tsx   # Radar skill chart
+│   │   │   ├── DailyOracle.tsx  # Daily quest generator
 │   │   │   └── CharacterProfile.tsx
 │   │   └── ui/                  # shadcn/ui components
-│   ├── config/theme-config.tsx  # Theme registry & mode colors
-│   ├── hooks/use-mode-colors.ts # Dynamic color system
-│   └── stores/game-store.ts     # Zustand state management
+│   ├── config/
+│   │   ├── theme-config.tsx     # Theme registry & mode colors
+│   │   └── theme-texts.ts       # Character classes per theme
+│   ├── hooks/
+│   │   └── use-mode-colors.ts   # Dynamic color system per mode/theme
+│   ├── lib/
+│   │   ├── db.ts                # Prisma client
+│   │   └── game-store.ts        # Zustand state types
+│   └── stores/
+│       └── game-store.ts        # Game state, XP, levels, missions
 ├── prisma/schema.prisma
 ├── public/
+├── .env.example
 └── package.json
 ```
 
@@ -136,5 +153,4 @@ sendas-app/
 
 ## License
 
-La GNU Affero General Public License v3.0 (AGPL-3.0)
-```
+GNU Affero General Public License v3.0 (AGPL-3.0) 
